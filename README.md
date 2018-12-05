@@ -8,3 +8,5 @@ https://adventofcode.com/2018/
 - Day 1: sed & awk
 - Day 2: awk
 - Day 3: C
+- Day 4: Haskell
+- Day 5: Haskell
