@@ -63,7 +63,6 @@ infinitePoints targets = foldMap (pointOwners targets) outline
 part1 :: Set Point -> Int
 part1 targets = maximum (Map.elems areas)
   where
-    (Point x0 y0, Point x1 y1) = gridBounds targets
     initialMap = Map.fromSet (const 0) targets
     tallyPoint p =
       case pointOwners targets p of
