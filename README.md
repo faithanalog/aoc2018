@@ -10,3 +10,4 @@ https://adventofcode.com/2018/
 - Day 3: C
 - Day 4: Haskell
 - Day 5: Haskell
+- Day 6: Haskell
