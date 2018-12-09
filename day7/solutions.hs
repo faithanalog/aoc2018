@@ -2,6 +2,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
 
+-- dependencies: lens, containers, mtl, text
+
 import Control.Lens
 import Control.Monad
 import Control.Monad.State.Strict
