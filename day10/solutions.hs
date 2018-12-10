@@ -3,14 +3,11 @@ module Main where
 -- dependencies: vector
 
 import Control.Monad.State.Lazy
-import qualified Data.Vector.Mutable as MVec
-import qualified Data.Vector as Vec
 import Data.IORef
+import qualified Data.Vector.Unboxed.Mutable as MVec
 import System.Exit
 
-data V2 =
-  V2 Int
-     Int
+type V2 = (Int, Int)
 
 width :: Int
 width = 80
@@ -36,12 +33,12 @@ run initialStuff = do
     writeIORef maxXR minBound
     writeIORef maxYR minBound
     forM_ [0 .. MVec.length xs - 1] $ \i -> do
-      (V2 px py, V2 vx vy) <- MVec.read xs i
+      ((px, py), (vx, vy)) <- MVec.read xs i
       modifyIORef' minXR (min (px + vx))
       modifyIORef' minYR (min (py + vy))
       modifyIORef' maxXR (max (px + vx))
       modifyIORef' maxYR (max (py + vy))
-      MVec.write xs i (V2 (px + vx) (py + vy), V2 vx vy)
+      MVec.write xs i ((px + vx, py + vy), (vx, vy))
     minX <- readIORef minXR
     minY <- readIORef minYR
     maxX <- readIORef maxXR
@@ -50,7 +47,7 @@ run initialStuff = do
       outputBuffer <- MVec.new (width * height)
       forM_ [0 .. (width * height) - 1] $ \i -> MVec.write outputBuffer i ' '
       forM_ [0 .. MVec.length xs - 1] $ \i -> do
-        (V2 px py, V2 vx vy) <- MVec.read xs i
+        ((px, py), (vx, vy)) <- MVec.read xs i
         let dx = px - minX
         let dy = py - minY
         MVec.write outputBuffer ((px - minX) + (py - minY) * width) '#'
@@ -74,7 +71,7 @@ parse = evalState $ do
     vx <- state (splitAt (length "-X"))
     modify (drop (length ", "))
     vy <- state (splitAt (length "-X"))
-    pure (V2 (read px) (read py), V2 (read vx) (read vy))
+    pure ((read px, read py), (read vx, read vy))
 
   
 
