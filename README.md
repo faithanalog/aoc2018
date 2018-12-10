@@ -13,3 +13,4 @@ https://adventofcode.com/2018/
 - Day 6: Haskell
 - Day 7: Haskell
 - Day 8: Haskell
+- Day 9: Haskell

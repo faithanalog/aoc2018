@@ -6,39 +6,42 @@ module Main where
 import Control.Lens
 import Control.Monad.State.Lazy
 import Data.List hiding (insert)
-import Data.Sequence (Seq, (|>))
+import Data.Maybe
+import Data.Sequence (Seq, (><), (|>))
 import qualified Data.Sequence as Seq
 
-data Circle a =
-  Circle Int
-         (Seq a)
-  deriving (Eq, Read, Show)
+newtype Circle a = Circle (Seq a) deriving (Eq, Read, Show)
 
 singleton :: a -> Circle a
-singleton x = Circle 0 (Seq.singleton x)
+singleton x = Circle (Seq.singleton x)
 
 -- Move the read/write head counter-clockwise
 goCounterClockwise :: Circle a -> Circle a
 goCounterClockwise = goCounterClockwiseN 1
 
 goCounterClockwiseN :: Int -> Circle a -> Circle a
-goCounterClockwiseN n = goClockwiseN (-n)
+goCounterClockwiseN n (Circle xs) = Circle (r >< l)
+  where
+    (l, r) = Seq.splitAt (length xs - n) xs
 
 goClockwise :: Circle a -> Circle a
 goClockwise = goClockwiseN 1
 
 goClockwiseN :: Int -> Circle a -> Circle a
-goClockwiseN n (Circle i xs) = Circle ((i + n + length xs) `mod` length xs) xs
+goClockwiseN n (Circle xs) = Circle (r >< l)
+  where 
+    (l, r) = Seq.splitAt n xs
 
 insert :: a -> Circle a -> Circle a
-insert x (Circle i xs) = Circle i (Seq.insertAt i x xs)
+insert x (Circle xs) = Circle (x <| xs)
 
 remove :: Circle a -> Circle a
-remove (Circle i xs) =
-  Circle (i `mod` length (Seq.deleteAt i xs)) (Seq.deleteAt i xs)
+remove (Circle xs) = Circle r
+  where
+    (l, r) = Seq.splitAt 1 xs
 
 readHead :: Circle a -> a
-readHead (Circle i xs) = Seq.index xs i
+readHead (Circle xs) = fromJust (Seq.lookup 0 xs)
 
 numPlayers :: Int
 numPlayers = 493
