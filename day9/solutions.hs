@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Main where
 
--- Dependencies: lens, mtl, containers
+-- Dependencies: lens, mtl, containers, vector
 
 import Control.Lens
 import Control.Monad.State.Lazy
@@ -9,6 +9,9 @@ import Data.List hiding (insert)
 import Data.Maybe
 import Data.Sequence (Seq, (><), (|>))
 import qualified Data.Sequence as Seq
+import qualified Data.Vector.Unboxed.Mutable as MVec
+import qualified Data.Vector.Unboxed as Vec
+import Control.Monad.ST
 
 newtype Circle a = Circle (Seq a) deriving (Eq, Read, Show)
 
@@ -54,7 +57,7 @@ lastMarbleTwo = lastMarbleOne * 100
 
 type Marble = Int
 
-type Players = Seq Int
+type Players = Vec.Vector Int
 
 data GameState = GameState
   { _gameMarble :: Int
@@ -79,7 +82,7 @@ playMarble m
     gameCircle %= (insert m . goClockwiseN 2)
     pure 0
 
-playUntilScore :: Int -> Game (Players -> Players)
+playUntilScore :: Int -> Game (Int, Int)
 playUntilScore lastMarble = do
   gameMarble += 1
   m <- use gameMarble
@@ -90,18 +93,19 @@ playUntilScore lastMarble = do
       let player = (m - 1) `mod` numPlayers
       if score == 0
         then playUntilScore lastMarble
-        else pure (Seq.adjust' (+ score) player)
+        else pure (score, player)
 
 playFullGame :: Int -> Players
-playFullGame lastMarble =
-  foldl'
-    (&)
-    (Seq.replicate numPlayers 0)
+playFullGame lastMarble = runST $ do
+  players <- MVec.replicate numPlayers 0
+  mapM_
+    (\(score, player) -> MVec.unsafeModify players (+ score) player)
     (unfoldr (runStateT (playUntilScore lastMarble)) newGameState)
+  Vec.unsafeFreeze players
 
 main :: IO ()
 main = do
   putStr "Part 1: "
-  print (maximum (playFullGame lastMarbleOne))
+  print (Vec.maximum (playFullGame lastMarbleOne))
   putStr "Part 2: "
-  print (maximum (playFullGame lastMarbleTwo))
+  print (Vec.maximum (playFullGame lastMarbleTwo))
