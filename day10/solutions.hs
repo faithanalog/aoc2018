@@ -48,8 +48,6 @@ run initialStuff = do
       forM_ [0 .. (width * height) - 1] $ \i -> MVec.write outputBuffer i ' '
       forM_ [0 .. MVec.length xs - 1] $ \i -> do
         ((px, py), (vx, vy)) <- MVec.read xs i
-        let dx = px - minX
-        let dy = py - minY
         MVec.write outputBuffer ((px - minX) + (py - minY) * width) '#'
       putStrLn "Part 1: "
       forM_ [0 .. height - 1] $ \y -> do
