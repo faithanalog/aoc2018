@@ -5,8 +5,13 @@
 
 #define GRID_SIZE 300
 
+// Caches of the power levels of each cell.
+// The transposed version is used for more CPU cache efficiency when
+// calculating power vertically
 int powerCache[GRID_SIZE * GRID_SIZE];
+int powerCacheTransposed[GRID_SIZE * GRID_SIZE];
 
+// Caches of the power-square sums
 int gridCache[GRID_SIZE * GRID_SIZE];
 
 int powerLevelCalc(int x, int y) {
@@ -28,6 +33,7 @@ void primeCache() {
         for (int x = 1; x <= GRID_SIZE; x++) {
             powerCache[x - 1 + (y - 1) * GRID_SIZE] = powerLevelCalc(x, y);
             gridCache[x - 1 + (y - 1) * GRID_SIZE] = powerLevelCalc(x, y);
+            powerCacheTransposed[y - 1 + (x - 1) * GRID_SIZE] = powerLevelCalc(x, y);
         }
     }
 }
@@ -35,11 +41,14 @@ void primeCache() {
 int updatePowerSquare(int x, int y, int size) {
     int p = gridCache[x - 1 + (y - 1) * GRID_SIZE];
 
-    for (int xx = x; xx < x + size; xx++) {
-        p += powerLevel(xx, y + size - 1);
+    int *pcache = &powerCache[x - 1 + (y + size - 1 - 1) * GRID_SIZE];
+    for (int i = 0; i < size; i++) {
+        p += pcache[i];
     }
-    for (int yy = y; yy < y + size - 1; yy++) {
-        p += powerLevel(x + size - 1, yy);
+
+    pcache = &powerCacheTransposed[y - 1 + (x + size - 1 - 1) * GRID_SIZE];
+    for (int i = 0; i < size - 1; i++) {
+        p += pcache[i];
     }
 
     gridCache[x - 1 + (y - 1) * GRID_SIZE] = p;
