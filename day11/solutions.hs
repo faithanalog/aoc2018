@@ -1,8 +1,10 @@
 module Main where
 
-import qualified Data.Vector.Unboxed as V
-import Data.List
+-- dependencies: vector
+
 import Data.Function
+import Data.List
+import qualified Data.Vector.Unboxed as V
 
 serialNumber :: Int
 serialNumber = 4172
