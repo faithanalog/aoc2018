@@ -15,4 +15,4 @@ https://adventofcode.com/2018/
 - Day 8: Haskell
 - Day 9: Haskell
 - Day 10: "Haskell"
-- Day 11: C
+- Day 11: C, Haskell
