@@ -155,3 +155,59 @@ The left boundary of the active area can only grow by at most one per step, so
 it would make sense to keep the left boundary and focus, and just move it left
 or right as needed.
 
+
+The formula for the final value of a glider:
+
+Given:
+    - the left edge of a glider's spawn point, s
+    - the spawn generation, g
+    - The current generation, c
+
+value(s, g, c) = (s + (c - g)) * 3 + 3
+
+
+
+Given
+    - Gliders from a generator are evenly spaced, such that s1 - s0 = 13
+    - We know how many gliders have been emitted evenly spaced
+    - We know the (spawn point, generation) of the last generated glider
+
+v(s, g, c, 1) = value(s, g, c)
+v(s, g, c, n) = value(s + 13, g, c)
+              = (s + 13 + (c - g)) * 3 + 3
+              = (s + (c - g)) * 3 + 3 + 39
+              = v(s, g, c, n - 1) + 39
+gliderSum(s, g, c, n) = value(s, g, c) + 39 * (n - 1)
+
+
+Given
+    - Generators move left 2 for every glider generated
+    - Generators create a new glider every 11 steps
+    - The left edge of the generator in the ##.## state, s_g
+    - The generator spawn generation, g_g
+    - The current generation, c
+
+    
+numGeneratedGliders(g_g, c) = floor((c - (g_g + 11)) / 11)
+    - Note: we have to add 11 to g_g because the first glider is generated
+      11 steps after the generator is established
+
+finalGliderSpawnGeneration(g_g, c) = mod(c, 11)
+
+finalGliderSpawnPoint(s_g, g_g, c) = s_g + 15 - (2 * numGeneratedGliders(g_g, c))
+    - Note: We add 15 to the edge, because it will be 15 away from the left
+      edge of the *next* generator start, but then 2 will get subtracted since
+      it's the first generated glider, so we will get s_g + 13, which is what
+      we want.
+
+
+Thus,
+
+Given
+    - The left edge of a generator in the ##.## state, s_g
+    - The generator spawn generation, g_g
+    - The current generation, c
+
+The value of all gliders generated from the generator can be calculated like so:
+
+generatorGliderSum(s_g, g_g, c) = gliderSum(finalGliderSpawnPoint(s_g, g_g, c), finalGliderSpawnGeneration(g_g, c), c, numGeneratedGliders(g_g, c))
