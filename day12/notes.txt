@@ -100,7 +100,9 @@ Here is ###..#
 Once a glider exists, it can be stepped forward to any step in O(1) time, and
 the calculation area can be shrunk to exclude it.
 
-The plants will eventually work their way into a generator:
+=== NOTE: EVERYTHING BELOW THIS IS NOT RELEVANT TO THE INPUT PROVIDED TO ME ===
+
+The plants can eventually work their way into a generator:
 
 ..........##.##..........###..........###..........###..........###..........##
 ..........##...#..........###..........###..........###..........###..........#
@@ -192,7 +194,7 @@ numGeneratedGliders(g_g, c) = floor((c - (g_g + 11)) / 11)
     - Note: we have to add 11 to g_g because the first glider is generated
       11 steps after the generator is established
 
-finalGliderSpawnGeneration(g_g, c) = mod(c, 11)
+finalGliderSpawnGeneration(g_g, c) = c - mod(g_g + c, 11)
 
 finalGliderSpawnPoint(s_g, g_g, c) = s_g + 15 - (2 * numGeneratedGliders(g_g, c))
     - Note: We add 15 to the edge, because it will be 15 away from the left
