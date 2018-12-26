@@ -19,3 +19,5 @@ https://adventofcode.com/2018/
 - Day 12: Haskell
 - Day 13: C
 - Day 14: C
+- Day 15:
+- Day 16: Haskell
